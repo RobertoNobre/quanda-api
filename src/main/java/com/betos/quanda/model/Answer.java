@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "answer")
-public class Answer {
+public class Answer extends AuditModel {
 
 	@Id
 	@GeneratedValue(generator = "answer_generator")
