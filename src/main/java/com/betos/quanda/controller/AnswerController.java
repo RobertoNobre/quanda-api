@@ -14,59 +14,33 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.betos.quanda.exception.ResourceNotFoundException;
 import com.betos.quanda.model.Answer;
-import com.betos.quanda.repository.AnswerRepository;
-import com.betos.quanda.repository.QuestionRepository;
+import com.betos.quanda.service.AnswerService;
 
 @RestController
 public class AnswerController {
 
 	@Autowired
-	private AnswerRepository answerRepository;
-	
-	@Autowired
-	private QuestionRepository questionRepository;
+	private AnswerService answerService;
 	
 	@GetMapping("/question/{questionId}/answer")
 	public List<Answer> getAnswerbyQuestionId(@PathVariable Long questionId) {
-		return answerRepository.findByQuestionId(questionId);
+		return answerService.getAnswerbyQuestionId(questionId);
 	}
 	
 	@PostMapping("/question/{questionId}/answer")
-	public Answer create(@PathVariable Long questionId,
-			@Valid @RequestBody Answer answer) {
-		return questionRepository.findById(questionId)
-				.map(question -> {
-					answer.setQuestion(question);
-					return answerRepository.save(answer);
-				}).orElseThrow(() -> new ResourceNotFoundException("Question not found with id" + questionId));
+	public Answer create(@PathVariable Long questionId, @Valid @RequestBody Answer answer) {
+		return answerService.create(questionId, answer);
 	}
 	
 	@PutMapping("/question/{questionId}/answer/{answerId}")
 	public Answer put(@PathVariable Long questionId,
 			@PathVariable Long answerId, @Valid @RequestBody Answer answerRequest) {
-		if(!questionRepository.existsById(questionId)) {
-			throw new ResourceNotFoundException("Question not found with id" + questionId);
-		}
-		
-		return answerRepository.findById(answerId)
-				.map(answer -> {
-					answer.setText(answerRequest.getText());
-					return answerRepository.save(answer);
-				}).orElseThrow(() -> new ResourceNotFoundException("Answer not found with id" + answerId));
+		return answerService.put(questionId, answerId, answerRequest);
 	}
 	
 	@DeleteMapping("/question/{questionId}/answer/{answerId}")
 	public ResponseEntity<?> delete(@PathVariable Long answerId, @PathVariable Long questionId) {
-		if(!questionRepository.existsById(questionId)) {
-			throw new ResourceNotFoundException("Question not found with id"+ questionId);
-		}
-		
-		return answerRepository.findById(answerId)
-				.map(answer -> {
-					answerRepository.delete(answer);
-					return ResponseEntity.ok().build();
-				}).orElseThrow(() -> new ResourceNotFoundException("Answer not found with id" + answerId));
+		return answerService.delete(answerId, questionId);
 	}
 }
