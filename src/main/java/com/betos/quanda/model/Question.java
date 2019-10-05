@@ -1,9 +1,12 @@
 package com.betos.quanda.model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -29,6 +32,9 @@ public class Question extends AuditModel {
 	@Column(columnDefinition = "text")
 	private String description;
 
+	@OneToMany
+	private List<Answer> answers;
+	
 	public Long getId() {
 		return id;
 	}
@@ -51,5 +57,13 @@ public class Question extends AuditModel {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<Answer> getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(List<Answer> answers) {
+		this.answers = answers;
 	}
 }

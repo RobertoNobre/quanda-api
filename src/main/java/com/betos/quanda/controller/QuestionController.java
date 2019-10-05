@@ -13,36 +13,47 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.betos.quanda.model.Question;
 import com.betos.quanda.service.QuestionService;
 
 @RestController
+@RequestMapping("/api/question")
 public class QuestionController {
 	
 	@Autowired
 	private QuestionService questionService;
 	
-	@GetMapping("/question")
+	@GetMapping
 	public Page<Question> findAllPaged(Pageable pageable) {
 		
 		return questionService.findAll(pageable);
 	}
+	
+	@GetMapping("/{questionId}")
+	public Question findById(@PathVariable Long questionId) {
+		
+		return questionService.findById(questionId);
+	}
 	 
-	@PostMapping("/question")
+	@PostMapping
+    @PreAuthorize("hasRole('USER')")
 	public Question create(@Valid @RequestBody Question question) {
 		
 		return questionService.insert(question);
 	}
 	
-	@PutMapping("/question/{questionId}")
+	@PutMapping("/{questionId}")
+    @PreAuthorize("hasRole('USER')")
 	public Question update(@PathVariable Long questionId, @Valid @RequestBody Question questionRequest) {
 		
 		return questionService.update(questionId, questionRequest);
 	}
 	
-	@DeleteMapping("/question/{questionId}")
+	@DeleteMapping("/{questionId}")
+    @PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> delete(@PathVariable Long questionId) {
 		
 		return questionService.delete(questionId);
